@@ -7,7 +7,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    logger.info "INFO: params are #{params.inspect}"
+    @sort_column = params["sort_movies_by"]
+
+    if @sort_column.nil? then
+      @movies = Movie.all
+    else
+      @movies = Movie.all :order => "#{@sort_column} ASC"
+    end
   end
 
   def new
