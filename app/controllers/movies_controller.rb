@@ -8,13 +8,14 @@ class MoviesController < ApplicationController
 
   def index
     logger.info "INFO: params are #{params.inspect}"
-    @sort_column = params["sort_movies_by"]
 
+    @sort_column = params["sort_movies_by"]
     if @sort_column.nil? then
       @movies = Movie.all
     else
       @movies = Movie.all :order => "#{@sort_column} ASC"
     end
+    @all_ratings = ['G','PG','PG-13','R'] #Movie.all_ratings
   end
 
   def new
