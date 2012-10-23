@@ -1,4 +1,9 @@
 class MoviesController < ApplicationController
+  def initialize
+    super
+    @all_ratings = Movie.all_ratings
+
+  end
 
   def show
     id = params[:id] # retrieve movie ID from URI route
@@ -7,15 +12,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    logger.info "INFO: params are #{params.inspect}"
-
-    @sort_column = params["sort_movies_by"]
-    if @sort_column.nil? then
-      @movies = Movie.all
+    if params[:ratings].nil?
+      session[:selected_ratings] = @all_ratings
     else
-      @movies = Movie.all :order => "#{@sort_column} ASC"
+      session[:selected_ratings] = params[:ratings].keys
     end
-    @all_ratings = ['G','PG','PG-13','R'] #Movie.all_ratings
+
+    if params["sort_movies_by"].nil? then
+      @movies = Movie.find_all_by_rating(session[:selected_ratings])
+    else
+      @movies = Movie.order(params["sort_movies_by"]).find_all_by_rating(session[:selected_ratings])
+    end
+
+    logger.info "INFO: params are #{params.inspect}"
+    logger.info "INFO: session data is #{session.inspect}"
   end
 
   def new
